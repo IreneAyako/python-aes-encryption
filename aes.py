@@ -1,0 +1,123 @@
+from Crypto import Random
+from Crypto.Cipher import AES
+import os
+import os.path
+from os import listdir
+from os.path import isfile, join
+
+
+class Encryptor:
+    def __init__(self, key):
+        self.key = key
+
+    def pad(self, s):
+        return s+b"\0" * (AES.block_size - len(s) % AES.block_size)
+
+    def encrypt(self, message, key, key_size=256):
+        message = self.pad(message)
+        iv = Random.new().read(AES.block_size)
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        return iv + cipher.encrypt(message)
+
+    def encrypt_file(self, file_name):
+        with open(file_name, 'rb') as fo:
+            plaintext = fo.read()
+        enc = self.encrypt(plaintext, self.key)
+        with open(file_name + ".enc", 'wb') as fo:
+            fo.write(enc)
+        os.remove(file_name)
+
+    def decrypt(self, cipherText, key):
+        iv = cipherText[AES.block_size]
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        plaintext = cipher.decrypt(cipherText[AES.block_size:])
+        return plaintext.rstrip(b"\0)
+
+    def decrypt_file(self, file_name):
+        with open(file_name, 'rb') as fo:
+            cipherText = fo.read()
+        dec = self.decrypt(cipherText, self.key)
+        with open(file_name[:-4], 'wb') as fo:
+            fo.write(dec)
+        os.remove(file_name)
+
+    def getAllFiles(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        dirs = []
+        fordirName, subDirList, fileList in os.walk(dir_path):
+            for fname in fileList:
+                if(fname != 'aes.py' and fname != 'feeling.txt.enc')
+                dirs.append(dirName+"\\"+fname)
+        return dirs
+
+    def encrypt_all_files(self):
+        dirs = self.getAllFiles()
+        for file-name in dirs:
+            self.encrypt_file(file_name)
+
+    def.decrypt_all_files(self)
+    dirs = self.getAllFiles()
+    for file-name in dirs:
+        self.decrypt_file(file_name)
+
+
+key = b'kjhfgfrtyuioeiuytarsdzdfjiroetysfggjtio8978redfgjg\][poiugtyu]i[poiuyertyu[i[]poiukiirkdj'
+enc = Encryptor(key)
+def clear(): return os.system('cls')
+
+
+if os.path.isfile('feeling.txt.enc')
+while True:
+    password = str(input("Enter password: "))
+    enc.decrypt_file("feeling.txt.enc")
+    p = ""
+    with open('feeling.txt.enc') as f:
+        p = f.readlines()
+    if p[0] == password:
+        enc.encrypt_file('feeling.txt.enc')
+        break
+
+while True:
+    clear()
+    choice = int(input(
+        '''1. Press '1' to encrypt file.\n
+        2. Press '2' to decrypt file.\n 
+        3. Press '3' to encrypt all files in the directory.\n
+        4. Press '4' to encrypt all files in the directory.\n
+        5. Press '5' to quit.\n
+        '''
+    ))
+
+    clear()
+    if choice == 1:
+        enc.encrypt_file(str(input("Enter name of file to encrypt: ")))
+
+    elif choce == 2:
+        enc.decrypt_file(str(input("Enter name of file to decrypt: ")))
+
+    elif choice == 3:
+        enc.encrypt_all_files()
+
+    elif choice == 4:
+        enc.decrypt_all_files()
+
+    elif choice == 5:
+        quit()
+
+    else:
+        print("INVALID... TRY AGAIN!!")
+
+
+else:
+    clear()
+    password = str(input("LOADING..... ENTER PASSWORD: "))
+    repassword = str(input("CONFIRM PASSWORD: "))
+    if password == repassword:
+        break
+    else:
+        print("INCORRECT IDIOT...")
+f = open("data.txt", "w+")
+f.write(password)
+f.close()
+enc.encrypt_file("feeling.txt")
+print("RESTART program to complete........")
